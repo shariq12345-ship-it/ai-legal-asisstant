@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Legal Assistant</title>
+
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" />
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- html2pdf Bundle CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+
+<!-- Animated Image Container -->
+<div class="bg-cyber-container">
+    <div class="bg-animated-image"></div>
+    <div class="bg-overlay"></div>
+</div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar interactive">
+        <div class="sidebar-logo" title="LexAI System">
+            <i class="fa-solid fa-scale-balanced"></i>
+        </div>
+        <!-- <div class="sidebar-icons">
+            <button class="sidebar-btn" id="newChatBtn" title="New Chat"><i class="fa-solid fa-plus"></i></button>
+            <button class="sidebar-btn" title="Search Chat"><i class="fa-solid fa-magnifying-glass"></i></button>
+            <button class="sidebar-btn" title="Images"><i class="fa-regular fa-image"></i></button>
+            <button class="sidebar-btn" title="Library"><i class="fa-solid fa-book-bookmark"></i></button>
+        </div> -->
+    </aside>
+
+    <div class="ui-container">
+        <header class="interactive">
+            <div class="logo">Lex-<span>AI</span></div>
+            
+            <!-- Default Login Button -->
+            <button class="login-btn" id="loginBtn">Sign in / Sign up</button>
+
+            <!-- User Profile (Hidden by default) -->
+            <div class="user-profile-wrapper" id="userProfileWrapper" style="display: none;">
+                <button class="user-profile-btn" id="userProfileBtn">
+                    <i class="fa-solid fa-circle-user"></i>
+                    <span id="userNameDisplay">User</span>
+                    <i class="fa-solid fa-chevron-down caret-icon"></i>
+                </button>
+                <ul class="user-dropdown" id="userDropdown">
+                    <li><a href="#" id="logoutBtn" class="logout-link"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+                </ul>
+            </div>
+        </header>
+
+        <main class="main-content interactive" id="mainContent">
+            <div class="header-text">
+                <h1>Your Intelligent <span>Legal Partner</span></h1>
+                <p class="subtitle">Case laws, document analysis, and legal drafting simplified by Artificial Intelligence.</p>
+            </div>
+
+            <!-- Chat History -->
+            <div id="chatHistory" class="chat-history" style="display: none;"></div>
+
+            <!-- Attached File Indicator Badge -->
+            <div id="attachedFileContainer" style="display: none; text-align: left; width: 100%; margin: 0 auto;">
+                <div class="file-badge">
+                    <i class="fa-solid fa-file-lines"></i>
+                    <span id="attachedFileName">document.pdf</span>
+                    <i class="fa-solid fa-xmark remove-file" id="removeFileBtn" title="Remove File"></i>
+                </div>
+            </div>
+
+            <!-- Search Container -->
+            <div class="search-container">
+                <div class="search-box">
+                    <div class="plus-menu-container" id="uploadMenuContainer">
+                        <button class="icon-btn plus-btn" id="menuToggleBtn" title="Tools Menu">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                        <ul class="dropdown-list" id="dropdownList">
+                            <li><a href="#" id="uploadDocOption"><i class="fa-solid fa-file-upload"></i> Upload Document (PDF/DOCX)</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="input-wrapper">
+                        <input type="text" class="search-input" placeholder="⚠️ Please select a mode below to start...">
+                    </div>
+
+                    <div class="right-actions">
+                        <button class="icon-btn action-icon submit-prompt-btn" id="submitBtn" title="Send Prompt" disabled>
+                            <i class="fa-solid fa-arrow-up"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mode Selection Options -->
+            <div class="mode-selection-wrapper">
+                <p class="mode-label">Select Mode <span class="required-star">*</span></p>
+                <div class="suggestions">
+                    <span class="tag" data-mode="Simple English Translator">Simple English Translator</span>
+                    <span class="tag" data-mode="Simple Document Builder">Simple Document Builder</span>
+                    <span class="tag" data-mode="AI chatbot">AI chatbot</span>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>&copy; 2026 LexAI. Secured with Enterprise-Grade Encryption.</p>
+        </footer>
+    </div>
+
+    <!-- Login/Signup Modal -->
+    <div class="modal-overlay" id="loginModal">
+        <div class="modal-content">
+            <button class="close-modal" id="closeModal">&times;</button>
+            
+            <!-- Auth Navigation Tabs -->
+            <div class="auth-tabs">
+                <button class="auth-tab-btn active" id="signInTabBtn">Sign In</button>
+                <button class="auth-tab-btn" id="signUpTabBtn">Sign Up</button>
+            </div>
+
+            <!-- Sign In Form -->
+            <div id="signInFormContainer">
+                <h2>Welcome Back</h2>
+                <p>Access your professional legal toolkit.</p>
+                <form class="modal-form" id="signInForm">
+                    <input type="email" id="signInEmail" placeholder="Email Address" required>
+                    <input type="password" placeholder="Password" required>
+                    <button type="submit" class="modal-submit-btn">Sign In</button>
+                </form>
+            </div>
+
+            <!-- Sign Up Form -->
+            <div id="signUpFormContainer" style="display: none;">
+                <h2>Create Account</h2>
+                <p>Start drafting & analyzing legal documents with AI.</p>
+                <form class="modal-form" id="signUpForm">
+                    <input type="text" id="signUpName" placeholder="Full Name" required>
+                    <input type="email" placeholder="Email Address" required>
+                    <input type="password" placeholder="Password" required>
+                    <button type="submit" class="modal-submit-btn">Sign Up</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
