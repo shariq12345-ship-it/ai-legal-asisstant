@@ -1,7 +1,6 @@
 const express = require('express');
 const cors = require('cors');
 const multer = require('multer');
-const fs = require('fs');
 const path = require('path');
 require('dotenv').config();
 const pdfParse = require('pdf-parse');
@@ -9,7 +8,6 @@ const mammoth = require('mammoth');
 const Groq = require("groq-sdk");
 
 const app = express();
-const PORT = process.env.PORT || 5000;
 
 const groq = new Groq({
     apiKey: process.env.GROQ_API_KEY
@@ -19,12 +17,8 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Temporary uploads folder
-const upload = multer({ dest: 'uploads/' });
-
-if (!fs.existsSync('uploads')) {
-    fs.mkdirSync('uploads');
-}
+// ✅ FIXED: Vercel ke liye Memory Storage (RAM) use karein
+const upload = multer({ storage: multer.memoryStorage() });
 
 // Root Route
 app.get('/', (req, res) => {
@@ -39,26 +33,21 @@ app.post('/api/legal/process', upload.single('document'), async (req, res) => {
 
         // Handle uploaded file (PDF / DOCX / TXT)
         if (req.file) {
-            const filePath = req.file.path;
             const originalName = req.file.originalname.toLowerCase();
+            const fileBuffer = req.file.buffer; // ✅ Direct memory buffer
 
             try {
                 if (req.file.mimetype === 'application/pdf' || originalName.endsWith('.pdf')) {
-                    const dataBuffer = fs.readFileSync(filePath);
-                    const pdfData = await pdfParse(dataBuffer);
+                    const pdfData = await pdfParse(fileBuffer);
                     documentContent = pdfData.text;
                 } else if (originalName.endsWith('.docx') || originalName.endsWith('.doc')) {
-                    const result = await mammoth.extractRawText({ path: filePath });
+                    const result = await mammoth.extractRawText({ buffer: fileBuffer });
                     documentContent = result.value;
                 } else {
-                    documentContent = fs.readFileSync(filePath, 'utf8');
+                    documentContent = fileBuffer.toString('utf-8');
                 }
             } catch (err) {
                 console.error("❌ File parsing error:", err);
-            } finally {
-                if (fs.existsSync(filePath)) {
-                    fs.unlinkSync(filePath); // Clean up temp file
-                }
             }
         }
 
@@ -119,7 +108,7 @@ Include placeholders like [Party Name], [Date], [Address] where relevant. Do NOT
     }
 });
 
-// Local server chalane ke liye
+// Local server
 if (process.env.NODE_ENV !== 'production') {
     const PORT = process.env.PORT || 5000;
     app.listen(PORT, () => {
@@ -127,5 +116,4 @@ if (process.env.NODE_ENV !== 'production') {
     });
 }
 
-// Vercel serverless function ke liye export zaroori hai
 module.exports = app;
