@@ -119,6 +119,12 @@ Include placeholders like [Party Name], [Date], [Address] where relevant. Do NOT
     }
 });
 
-app.listen(PORT, () => {
-    console.log(`🚀 LexAI Backend active on http://localhost:${PORT}`);
-});
+// Local test ke liye port listen karega
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, () => {
+        console.log(`🚀 LexAI Backend active on http://localhost:${PORT}`);
+    });
+}
+
+// Vercel Serverless Function ke liye Export (MOST IMPORTANT)
+module.exports = app;
